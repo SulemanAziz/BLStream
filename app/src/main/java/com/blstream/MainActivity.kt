@@ -1,4 +1,4 @@
-package com.example.blstream
+package com.blstream
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
