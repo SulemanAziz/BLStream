@@ -34,7 +34,10 @@ fun MainScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().fillMaxHeight(0.5f).padding(vertical = 20.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.5f)
+                .padding(vertical = 20.dp),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -45,16 +48,21 @@ fun MainScreen(
         }
 
         Row(
-            modifier = Modifier.fillMaxWidth().fillMaxHeight(0.5f).padding(horizontal = 8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.5f)
+                .padding(horizontal = 8.dp),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Button(
-                modifier = Modifier.fillMaxWidth(0.5f).border(
-                    shape = CircleShape,
-                    width = 4.dp,
-                    color = Color.Black
-                ),
+                modifier = Modifier
+                    .fillMaxWidth(0.5f)
+                    .border(
+                        shape = CircleShape,
+                        width = 4.dp,
+                        color = Color.Black
+                    ),
                 onClick = {
                     with(MainRoutes.Host){
                         navController.toHost()
@@ -66,11 +74,13 @@ fun MainScreen(
             }
 
             Button(
-                modifier = Modifier.fillMaxWidth().border(
-                    shape = CircleShape,
-                    width = 4.dp,
-                    color = Color.Black,
-                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(
+                        shape = CircleShape,
+                        width = 4.dp,
+                        color = Color.Black,
+                    ),
                 onClick = {
                     with(MainRoutes.Host){
                         navController.toReceiver()

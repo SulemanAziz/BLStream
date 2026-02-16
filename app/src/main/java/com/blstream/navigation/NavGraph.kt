@@ -7,6 +7,7 @@ import androidx.navigation.compose.rememberNavController
 import com.blstream.MainScreen
 import com.blstream.views.HostPairingScreen
 import com.blstream.views.HostScreen
+import com.blstream.views.ReceiverPairingScreen
 import com.blstream.views.ReceiverScreen
 
 @Composable
@@ -14,6 +15,7 @@ fun AppNavigation() {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = "home") {
+
         composable("home") {
             MainScreen(navController)
         }
@@ -28,6 +30,10 @@ fun AppNavigation() {
 
         composable("host_pairing"){
             HostPairingScreen()
+        }
+
+        composable("receiver_pairing"){
+            ReceiverPairingScreen()
         }
     }
 }
