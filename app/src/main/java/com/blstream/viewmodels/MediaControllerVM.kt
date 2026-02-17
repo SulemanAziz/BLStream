@@ -12,6 +12,8 @@ class MediaControllerVM(val songpath: Uri, val receiver: BluetoothSocket ) {
 
     suspend fun PlaySong(){
         //Play the song
+
+
     }
 
     suspend fun PauseSong(){
