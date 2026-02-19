@@ -25,6 +25,7 @@ import com.blstream.routes.MainRoutes
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.blstream.routes.MainRoutes.Receiver.toReceiver
+import com.blstream.routes.MainRoutes.Receiver.toReceiverPairing
 
 @Composable
 fun MainScreen(
@@ -65,7 +66,7 @@ fun MainScreen(
                     ),
                 onClick = {
                     with(MainRoutes.Host){
-                        navController.toHost()
+                        navController.toHostPairing()
                     }
                 }) {
                 Text(
@@ -83,7 +84,7 @@ fun MainScreen(
                     ),
                 onClick = {
                     with(MainRoutes.Host){
-                        navController.toReceiver()
+                        navController.toReceiverPairing()
                     }
                 }) {
                 Text(

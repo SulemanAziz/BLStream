@@ -1,5 +1,6 @@
 package com.blstream
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,9 +12,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.ViewModelProvider
 import com.example.blstream.ui.theme.BLStreamTheme
 import com.blstream.navigation.AppNavigation
+import com.blstream.viewmodels.HostBluetoothPairingVM
+import com.blstream.viewmodels.ReceiverBluetoothPairingVM
+import com.blstream.viewmodels.ReceiverViewModelFactory
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,7 +29,10 @@ class MainActivity : ComponentActivity() {
             BLStreamTheme(
                 darkTheme = true
             ) {
-                AppNavigation()
+                val appcontext: Context = LocalContext.current;
+                val Receivervm = ViewModelProvider(this,ReceiverViewModelFactory(appcontext)).get(ReceiverBluetoothPairingVM::class.java)
+                val Hostvm: HostBluetoothPairingVM = HostBluetoothPairingVM()
+                AppNavigation(Receivervm, appcontext, Hostvm)
             }
         }
     }

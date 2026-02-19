@@ -10,20 +10,33 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import java.io.IOException
 
 
-class ReceiverBluetoothPairingVM(context: Context){
+class ReceiverViewModelFactory(context: Context): ViewModelProvider.Factory{
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if(modelClass.isAssignableFrom(ReceiverBluetoothPairingVM::class.java)) {
+            return super.create(modelClass)
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
+}
+
+class ReceiverBluetoothPairingVM(context: Context) : ViewModel(){
     private val appcontext = context
     val bluetoothAdapter: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
-    public inner class AcceptThread : Thread() {
+
+    var messagefromHost:String = "";
+    inner class AcceptThread : Thread() {
         @delegate:SuppressLint("MissingPermission")
         private val mmServerSocket: BluetoothServerSocket? by lazy(LazyThreadSafetyMode.NONE)
         {
             if (ContextCompat.checkSelfPermission(appcontext, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
-                val NAME = "RECEIVER"
-                val Connection_UUID = java.util.UUID.fromString(NAME)
-                bluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord(NAME, Connection_UUID)
+                val name = "RECEIVER"
+                val Connection_UUID = java.util.UUID.fromString(name)
+                bluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord(name, Connection_UUID)
             } else {
                 null
             }
@@ -72,6 +85,9 @@ class ReceiverBluetoothPairingVM(context: Context){
                     Log.d(TAG, "Received: $message")
 
                     // TODO: Update UI or State with the received message
+
+                    messagefromHost = message;
+
                     // Since this is a ViewModel, use a StateFlow or LiveData here
 
                 } catch (e: IOException) {
@@ -90,4 +106,4 @@ class ReceiverBluetoothPairingVM(context: Context){
         }
     }
 
-    }
+}

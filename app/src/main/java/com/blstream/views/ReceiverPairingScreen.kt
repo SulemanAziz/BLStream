@@ -4,10 +4,13 @@ import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.material3.Text
 import androidx.compose.ui.platform.LocalContext
-import com.blstream.viewmodels.HostBluetoothPairingVM
+import androidx.lifecycle.ViewModelProvider
 import com.blstream.viewmodels.ReceiverBluetoothPairingVM
+import com.blstream.viewmodels.ReceiverViewModelFactory
+
 
 @Composable
-fun HostScreen(){
-    Text(text = "Welcome to the Host Screen!")
+fun ReceiverPairingScreen(vm: ReceiverBluetoothPairingVM, appcontext: Context) {
+    //Bluetooth needed here
+    vm.AcceptThread().start()
 }

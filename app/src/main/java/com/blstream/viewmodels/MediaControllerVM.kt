@@ -5,12 +5,12 @@ import android.net.Uri
 
 class MediaControllerVM(val songpath: Uri, val receiver: BluetoothSocket ) {
     val song = songpath
-
+    var songbuffer: ByteArray = ByteArray(1024);
     suspend fun LoadSong(){
         //Load the song into the cache
     }
 
-    suspend fun PlaySong(){
+    fun PlaySong(){
         //Play the song
 
 
@@ -22,11 +22,13 @@ class MediaControllerVM(val songpath: Uri, val receiver: BluetoothSocket ) {
     }
 
     suspend fun StopSong(){
-        // Terminate Playback, go back to song selection fragment
+        // Terminate Playback
     }
 
     fun StreamSong(songreceiver: BluetoothSocket = receiver){
-        //Buffer the loaded song into cache and stream it to the receiver
+        // Use the songbuffer defined above and send to the receiver
+
+
 
         //Loop to continue until interrupted or song ends.
     }

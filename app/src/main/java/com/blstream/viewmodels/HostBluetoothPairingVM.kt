@@ -8,18 +8,20 @@ import android.content.ContentValues.TAG
 import android.content.Context
 import android.util.Log
 import androidx.annotation.RequiresPermission
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import java.io.ByteArrayInputStream
 import java.io.FileInputStream
 import java.io.IOException
 import java.io.InputStream
 import kotlin.let
 
-class HostBluetoothPairingVM() {
+class HostBluetoothPairingVM() : ViewModel() {
     private val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
-    public inner class ConnectThread(device: BluetoothDevice) : Thread() {
+    inner class ConnectThread(device: BluetoothDevice) : Thread() {
         private val mmSocket: BluetoothSocket? by lazy(LazyThreadSafetyMode.NONE) {
-            val NAME = "RECEIVER"
-            val Connection_UUID = java.util.UUID.fromString(NAME)
+            val name = "RECEIVER"
+            val Connection_UUID = java.util.UUID.fromString(name)
 
             device.createRfcommSocketToServiceRecord(Connection_UUID)
         }
