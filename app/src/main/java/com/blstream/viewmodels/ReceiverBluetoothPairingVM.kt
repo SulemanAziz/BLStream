@@ -15,10 +15,11 @@ import androidx.lifecycle.ViewModelProvider
 import java.io.IOException
 
 
-class ReceiverViewModelFactory(context: Context): ViewModelProvider.Factory{
+class ReceiverViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if(modelClass.isAssignableFrom(ReceiverBluetoothPairingVM::class.java)) {
-            return super.create(modelClass)
+        if (modelClass.isAssignableFrom(ReceiverBluetoothPairingVM::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return ReceiverBluetoothPairingVM(context) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

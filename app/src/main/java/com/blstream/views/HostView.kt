@@ -31,10 +31,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import com.blstream.routes.MainRoutes
+import com.blstream.routes.MainRoutes.Receiver.toReceiver
 import com.example.blstream.R
 
 @Composable
-fun HostScreen() {
+fun HostScreen(navController: NavHostController? = null) {
 
     Scaffold(
         bottomBar = {
@@ -61,7 +65,11 @@ fun HostScreen() {
                     },
                     label = { Text("Devices") },
                     selected = false,
-                    onClick = { /* Navigate or switch view */ }
+                    onClick = {
+                        with(MainRoutes.Host){
+                            navController?.toHostPairing()
+                        }
+                    }
                 )
             }
         }
@@ -111,7 +119,7 @@ fun HostScreen() {
                     modifier = Modifier.padding(end = 12.dp)
                 )
                 FloatingActionButton(
-                    onClick = { /* TODO: Open file picker or add logic */ },
+                    onClick = { },
                     containerColor = MaterialTheme.colorScheme.primary
                 ) {
                     Icon(Icons.Default.Add, contentDescription = "Add Song")

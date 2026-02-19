@@ -24,11 +24,11 @@ fun AppNavigation(Receivervm: ReceiverBluetoothPairingVM, Hostvm: HostBluetoothP
         }
 
         composable("host_view") {
-
+            HostScreen(navController)
         }
 
         composable("receiver_view") {
-
+            ReceiverScreen(navController)
         }
 
         composable("host_pairing"){
