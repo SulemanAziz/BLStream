@@ -1,14 +1,8 @@
 package com.blstream.views
 
+import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.material3.Text
-
-@Composable
-fun HostPairingScreen(){
-    //Bluetooth needed here
-}
-
-@Composable
-fun HostScreen() {
-    Text(text = "Welcome to the Host Screen!")
-}
+import androidx.compose.ui.platform.LocalContext
+import com.blstream.viewmodels.HostBluetoothPairingVM
+import com.blstream.viewmodels.ReceiverBluetoothPairingVM

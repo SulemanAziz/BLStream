@@ -8,13 +8,15 @@ import android.content.ContentValues.TAG
 import android.content.Context
 import android.util.Log
 import androidx.annotation.RequiresPermission
+import java.io.ByteArrayInputStream
+import java.io.FileInputStream
 import java.io.IOException
+import java.io.InputStream
 import kotlin.let
 
 class HostBluetoothPairingVM() {
     private val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
-
-    private inner class ConnectThread(device: BluetoothDevice) : Thread() {
+    public inner class ConnectThread(device: BluetoothDevice) : Thread() {
         private val mmSocket: BluetoothSocket? by lazy(LazyThreadSafetyMode.NONE) {
             val NAME = "RECEIVER"
             val Connection_UUID = java.util.UUID.fromString(NAME)
@@ -53,15 +55,18 @@ class HostBluetoothPairingVM() {
 
     inner class HandleConnection(private val mmSocket: BluetoothSocket) : Thread() {
         private val mmOutstream = mmSocket.outputStream
+//        private val songpath: String = ""; // Audio File path - TODO Provide URI here from UI
+//        private val inputStream: ByteArrayInputStream = ByteArrayInputStream(ByteArray(songpath.toByteArray()));
+//        private val SoundArray: ByteArray = inputStream; // TODO This byte array has a size which needs to be buffered and then written into mmOutstream in chunks
 
         //To the outstream above, we must write the serialized byte array of the mp3 file.
         private val messageString: String = "HElloooo"
 
         override fun run() {
             try {
-                val bytesToSend = messageString.toByteArray()
-                mmOutstream.write(bytesToSend)
-                // Flush to ensure it's sent immediately
+                val SongByteArray = messageString.toByteArray()
+
+                mmOutstream.write(SongByteArray)
                 mmOutstream.flush()
 
                 Log.d(TAG, "Sent: $messageString")

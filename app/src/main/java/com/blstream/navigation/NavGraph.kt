@@ -21,11 +21,11 @@ fun AppNavigation() {
         }
 
         composable("host_view") {
-            HostScreen()
+            HostPairingScreen()
         }
 
         composable("receiver_view") {
-            ReceiverScreen()
+            ReceiverPairingScreen()
         }
 
         composable("host_pairing"){

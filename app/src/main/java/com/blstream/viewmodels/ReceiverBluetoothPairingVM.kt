@@ -16,7 +16,7 @@ import java.io.IOException
 class ReceiverBluetoothPairingVM(context: Context){
     private val appcontext = context
     val bluetoothAdapter: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
-    private inner class AcceptThread : Thread() {
+    public inner class AcceptThread : Thread() {
         @delegate:SuppressLint("MissingPermission")
         private val mmServerSocket: BluetoothServerSocket? by lazy(LazyThreadSafetyMode.NONE)
         {
@@ -41,7 +41,7 @@ class ReceiverBluetoothPairingVM(context: Context){
                     null
                 }
                 socket?.also {
-                    HandleConnection(socket)
+                    HandleConnection(socket).start();
                     mmServerSocket?.close()
                     shouldLoop = false
                 }
