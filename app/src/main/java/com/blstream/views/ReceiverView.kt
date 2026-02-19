@@ -73,11 +73,13 @@ fun ReceiverScreen() {
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_stop),
-                contentDescription = "Stop Playback",
-                modifier = Modifier.size(36.dp)
-            )
+            IconButton(onClick = { /* TODO: Hook up stop logic */ }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_stop),
+                    contentDescription = "Stop Playback",
+                    modifier = Modifier.size(36.dp)
+                )
+            }
 
             // Play/Pause Button
             IconButton(onClick = { /* TODO: Hook up play/pause logic */ }) {
