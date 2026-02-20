@@ -1,5 +1,6 @@
 package com.blstream.views
 
+import android.bluetooth.BluetoothSocket
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,11 +17,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.blstream.R
 
 @Composable
-fun ReceiverScreen(navController: NavHostController? = null) {
+fun ReceiverScreen(navController: NavController? = null, socket: BluetoothSocket? = null) {
     Column(
         modifier = Modifier
             .fillMaxSize()

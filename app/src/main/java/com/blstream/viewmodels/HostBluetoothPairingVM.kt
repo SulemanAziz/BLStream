@@ -20,8 +20,8 @@ class HostBluetoothPairingVM() : ViewModel() {
     private val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
     inner class ConnectThread(device: BluetoothDevice) : Thread() {
         private val mmSocket: BluetoothSocket? by lazy(LazyThreadSafetyMode.NONE) {
-            val name = "RECEIVER"
-            val Connection_UUID = java.util.UUID.fromString(name)
+            val UUID = "2077faa4-4b23-42a5-94e6-ee47f50ea485"
+            val Connection_UUID = java.util.UUID.fromString(UUID)
 
             device.createRfcommSocketToServiceRecord(Connection_UUID)
         }
@@ -32,16 +32,13 @@ class HostBluetoothPairingVM() : ViewModel() {
             bluetoothAdapter?.cancelDiscovery()
 
             mmSocket?.let { socket ->
-                // Connect to the remote device through the socket. This call blocks
-                // until it succeeds or throws an exception.
                 try {
                     socket.connect()
                 }catch(e: IOException){
                     Log.e(TAG, "Socket's connect() method failed", e)
                 }
-                // The connection attempt succeeded. Perform work associated with
-                // the connection in a separate thread.
-                HandleConnection(mmSocket!!)
+
+                HandleConnection(mmSocket!!).start()
             }
         }
 
@@ -55,11 +52,11 @@ class HostBluetoothPairingVM() : ViewModel() {
         }
     }
 
-    inner class HandleConnection(private val mmSocket: BluetoothSocket) : Thread() {
+    inner class HandleConnection(mmSocket: BluetoothSocket) : Thread() {
         private val mmOutstream = mmSocket.outputStream
-//        private val songpath: String = ""; // Audio File path - TODO Provide URI here from UI
+//        private val songpath: String = ""; // Audio File path
 //        private val inputStream: ByteArrayInputStream = ByteArrayInputStream(ByteArray(songpath.toByteArray()));
-//        private val SoundArray: ByteArray = inputStream; // TODO This byte array has a size which needs to be buffered and then written into mmOutstream in chunks
+//        private val SoundArray: ByteArray = inputStream; // This byte array has a size which needs to be buffered and then written into mmOutstream in chunks
 
         //To the outstream above, we must write the serialized byte array of the mp3 file.
         private val messageString: String = "HElloooo"

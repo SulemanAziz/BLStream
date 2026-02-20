@@ -3,11 +3,11 @@
   <component name="deploymentTargetSelector">
     <selectionStates>
       <SelectionState runConfigName="app">
-        <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2026-02-19T22:57:00.324718300Z">
+        <option name="selectionMode" value="DIALOG" />
+        <DropdownSelection timestamp="2026-02-20T01:21:56.201550800Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\Laptop\.android\avd\Small_Phone.avd" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\Laptop\.android\avd\Receiver.avd" />
             </handle>
           </Target>
         </DropdownSelection>
@@ -20,7 +20,7 @@
             </Target>
             <Target type="DEFAULT_BOOT">
               <handle>
-                <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\Laptop\.android\avd\Small_Phone.avd" />
+                <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\Laptop\.android\avd\Host.avd" />
               </handle>
             </Target>
           </targets>

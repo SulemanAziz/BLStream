@@ -66,7 +66,7 @@ fun MainScreen(
                     ),
                 onClick = {
                     with(MainRoutes.Host){
-                        navController.toHost()
+                        navController.toHostPairing()
                     }
                 }) {
                 Text(
@@ -84,7 +84,7 @@ fun MainScreen(
                     ),
                 onClick = {
                     with(MainRoutes.Host){
-                        navController.toReceiver()
+                        navController.toReceiverPairing()
                     }
                 }) {
                 Text(
