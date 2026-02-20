@@ -10,12 +10,16 @@ import android.os.Build
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -25,7 +29,6 @@ import com.blstream.viewmodels.HostBluetoothPairingVM
 fun HostPairingScreen(vm: HostBluetoothPairingVM, appcontext: Context) {
 
     val bluetoothAdapter: BluetoothAdapter? = remember { BluetoothAdapter.getDefaultAdapter() }
-    // State for the device list
     var pairedDevices by remember { mutableStateOf<List<BluetoothDevice>>(emptyList()) }
 
     // 1. Define the permissions needed based on Android version
@@ -77,7 +80,11 @@ fun PairedDevicesList(
     vm: HostBluetoothPairingVM,
     context: Context
 ) {
-    Column {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
         pairedDevices.forEach { device ->
             Button(onClick = {
                 vm.ConnectThread(device).start()

@@ -23,6 +23,7 @@ import com.blstream.viewmodels.ReceiverViewModelFactory
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        val Hostvm: HostBluetoothPairingVM = HostBluetoothPairingVM()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
@@ -30,19 +31,9 @@ class MainActivity : ComponentActivity() {
                 darkTheme = true
             ) {
                 val appcontext: Context = LocalContext.current;
-                val Receivervm = ViewModelProvider(this,ReceiverViewModelFactory(appcontext)).get(ReceiverBluetoothPairingVM::class.java)
-                val Hostvm: HostBluetoothPairingVM = HostBluetoothPairingVM()
-                AppNavigation(Receivervm, appcontext, Hostvm)
+                val Receivervm = ViewModelProvider(this,ReceiverViewModelFactory(appcontext))[ReceiverBluetoothPairingVM::class.java]
+                AppNavigation(Receivervm, Hostvm, appcontext)
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ScreenPreview() {
-    MaterialTheme(
-    ) {
-        AppNavigation()
     }
 }

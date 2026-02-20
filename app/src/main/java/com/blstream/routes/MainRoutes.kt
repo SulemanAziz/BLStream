@@ -1,4 +1,5 @@
 package com.blstream.routes
+import android.bluetooth.BluetoothSocket
 import androidx.navigation.NavController
 
 sealed class MainRoutes() {

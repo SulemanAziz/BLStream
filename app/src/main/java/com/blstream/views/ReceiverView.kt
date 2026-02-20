@@ -1,5 +1,6 @@
 package com.blstream.views
 
+import android.bluetooth.BluetoothSocket
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,10 +17,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.blstream.R
 
 @Composable
-fun ReceiverScreen() {
+fun ReceiverScreen(navController: NavController? = null, socket: BluetoothSocket? = null) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -82,12 +85,12 @@ fun ReceiverScreen() {
             }
 
             // Play/Pause Button
-            IconButton(onClick = { /* TODO: Hook up play/pause logic */ }) {
+            IconButton(onClick = {  }) {
                 Icon(Icons.Default.PlayArrow, contentDescription = "Play/Pause", modifier = Modifier.size(56.dp))
             }
 
             // Toggle Lyrics Button
-            IconButton(onClick = { /* TODO: Hook up lyrics toggle */ }) {
+            IconButton(onClick = {  }) {
                 Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Show/Disable Lyrics", modifier = Modifier.size(36.dp))
             }
         }

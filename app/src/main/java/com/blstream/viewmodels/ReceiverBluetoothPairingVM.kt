@@ -9,16 +9,22 @@ import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
+import com.blstream.routes.MainRoutes
+import com.blstream.routes.MainRoutes.Receiver.toReceiver
+import com.blstream.routes.MainRoutes.Receiver.toReceiverPairing
 import java.io.IOException
 
 
-class ReceiverViewModelFactory(context: Context): ViewModelProvider.Factory{
+class ReceiverViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if(modelClass.isAssignableFrom(ReceiverBluetoothPairingVM::class.java)) {
-            return super.create(modelClass)
+        if (modelClass.isAssignableFrom(ReceiverBluetoothPairingVM::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return ReceiverBluetoothPairingVM(context) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
@@ -26,37 +32,39 @@ class ReceiverViewModelFactory(context: Context): ViewModelProvider.Factory{
 
 class ReceiverBluetoothPairingVM(context: Context) : ViewModel(){
     private val appcontext = context
-    val bluetoothAdapter: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
-
+    var connectedsocket: BluetoothSocket? = null
+    val bluetoothAdapter: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+    var listen: Boolean = false;
     var messagefromHost:String = "";
     inner class AcceptThread : Thread() {
         @delegate:SuppressLint("MissingPermission")
         private val mmServerSocket: BluetoothServerSocket? by lazy(LazyThreadSafetyMode.NONE)
         {
             if (ContextCompat.checkSelfPermission(appcontext, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
-                val name = "RECEIVER"
-                val Connection_UUID = java.util.UUID.fromString(name)
-                bluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord(name, Connection_UUID)
+                val UUID = "2077faa4-4b23-42a5-94e6-ee47f50ea485"
+                val Connection_UUID = java.util.UUID.fromString(UUID)
+                bluetoothAdapter.listenUsingRfcommWithServiceRecord("ReceiverSide", Connection_UUID)
             } else {
+                Log.e(TAG, "Permission not granted")
                 null
             }
         }
 
         override fun run() {
             // Keep listening until exception occurs or a socket is returned.
-            var shouldLoop = true
-            while (shouldLoop) {
+            listen = true;
+            while (listen) {
                 val socket: BluetoothSocket? = try {
+                    Log.d(TAG, "Trying to Listen")
                     mmServerSocket?.accept()
                 } catch (e: IOException) {
                     Log.e(TAG, "Socket's accept() method failed", e)
-                    shouldLoop = false
                     null
                 }
                 socket?.also {
-                    HandleConnection(socket).start();
-                    mmServerSocket?.close()
-                    shouldLoop = false
+                    Log.d(TAG, "Connected, attempting to read buffer")
+                    AcceptThread().cancel() // We are done listening
+                    HandleConnection(socket).start() //Do everything in this thread, on return - the connection is terminated
                 }
             }
         }
@@ -65,6 +73,7 @@ class ReceiverBluetoothPairingVM(context: Context) : ViewModel(){
         fun cancel() {
             try {
                 mmServerSocket?.close()
+                listen = false;
             } catch (e: IOException) {
                 Log.e(TAG, "Could not close the connect socket", e)
             }
@@ -73,28 +82,20 @@ class ReceiverBluetoothPairingVM(context: Context) : ViewModel(){
 
     inner class HandleConnection(private val mmSocket: BluetoothSocket) : Thread() {
         private val mmInStream = mmSocket.inputStream
-        private val mmBuffer: ByteArray = ByteArray(1024)
+        private val expected = "HElloooo";
+        private val mmBuffer: ByteArray = ByteArray(expected.length)
 
-        override fun run(){
+        override fun run() {
             var numBytes:Int
-            while (true) {
                 try {
                     numBytes = mmInStream?.read(mmBuffer) ?: 0
-
-                    val message = String(mmBuffer, 0, numBytes)
-                    Log.d(TAG, "Received: $message")
-
-                    // TODO: Update UI or State with the received message
-
-                    messagefromHost = message;
-
-                    // Since this is a ViewModel, use a StateFlow or LiveData here
-
+                    messagefromHost = String(mmBuffer, 0, numBytes)
+                    Log.d(TAG, "Received: $messagefromHost") // Connection is working, let's move on
+                    connectedsocket = mmSocket;
+                    HandleConnection(mmSocket).cancel()
                 } catch (e: IOException) {
                     Log.d(TAG, "Input stream was disconnected", e)
-                    break
                 }
-            }
         }
 
         fun cancel() {
