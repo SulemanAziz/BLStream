@@ -1,6 +1,9 @@
 package com.blstream.views
 
+import android.annotation.SuppressLint
 import android.bluetooth.BluetoothSocket
+import android.util.Log
+import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -9,6 +12,11 @@ import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,10 +27,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import com.blstream.viewmodels.ReceiverBluetoothPairingVM
 import com.example.blstream.R
+import androidx.compose.runtime.collectAsState
 
+@SuppressLint("MissingPermission")
 @Composable
-fun ReceiverScreen(navController: NavController? = null, socket: BluetoothSocket? = null) {
+fun ReceiverScreen(navController: NavController? = null, vm: ReceiverBluetoothPairingVM) {
+
+    val socket: BluetoothSocket = vm.connectedsocket!!
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -36,14 +50,14 @@ fun ReceiverScreen(navController: NavController? = null, socket: BluetoothSocket
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(text = "Pairing Status:", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-            Text(text = "Disconnected", color = Color.Gray, fontWeight = FontWeight.Medium)
+            Text(text = "Connected", color = Color.Gray, fontWeight = FontWeight.Medium) //To do, make this state dynamic
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
         // Now Playing Title
         Text(
-            text = "Now Playing:",
+            text = "Device: ${socket?.remoteDevice?.name}",
             fontSize = 20.sp,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.align(Alignment.Start)
@@ -92,13 +106,5 @@ fun ReceiverScreen(navController: NavController? = null, socket: BluetoothSocket
                 Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Show/Disable Lyrics", modifier = Modifier.size(36.dp))
             }
         }
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true, name = "Receiver View")
-@Composable
-fun ReceiverScreenPreview() {
-    MaterialTheme {
-        ReceiverScreen()
     }
 }

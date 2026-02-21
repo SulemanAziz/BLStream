@@ -35,10 +35,11 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.blstream.routes.MainRoutes
 import com.blstream.routes.MainRoutes.Receiver.toReceiver
+import com.blstream.viewmodels.HostBluetoothPairingVM
 import com.example.blstream.R
 
 @Composable
-fun HostScreen(navController: NavHostController? = null) {
+fun HostScreen(navController: NavHostController? = null, vm: HostBluetoothPairingVM) {
 
     Scaffold(
         bottomBar = {
@@ -126,13 +127,5 @@ fun HostScreen(navController: NavHostController? = null) {
                 }
             }
         }
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true, name = "Host View")
-@Composable
-fun HostScreenPreview() {
-    MaterialTheme {
-        HostScreen()
     }
 }

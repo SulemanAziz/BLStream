@@ -1,12 +1,17 @@
 package com.blstream.navigation
 
+import android.bluetooth.BluetoothSocket
 import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavArgument
+import androidx.navigation.NavArgumentBuilder
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.blstream.MainScreen
 import com.blstream.viewmodels.HostBluetoothPairingVM
 import com.blstream.viewmodels.ReceiverBluetoothPairingVM
@@ -26,15 +31,15 @@ fun AppNavigation(Receivervm: ReceiverBluetoothPairingVM, Hostvm: HostBluetoothP
         }
 
         composable("host_view") {
-            HostScreen(navController)
+            HostScreen(navController, Hostvm)
         }
 
-        composable("receiver_view") {
-            ReceiverScreen(navController)
+        composable(route = "receiver_view",) {
+            ReceiverScreen(navController, Receivervm)
         }
 
         composable("host_pairing") {
-            HostPairingScreen(vm = Hostvm, appcontext = appcontext)
+            HostPairingScreen(vm = Hostvm, appcontext = appcontext, navcontroller = navController)
         }
 
         composable("receiver_pairing") {

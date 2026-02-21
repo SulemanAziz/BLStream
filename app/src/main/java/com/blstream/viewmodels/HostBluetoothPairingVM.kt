@@ -8,6 +8,9 @@ import android.content.ContentValues.TAG
 import android.content.Context
 import android.util.Log
 import androidx.annotation.RequiresPermission
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import java.io.ByteArrayInputStream
@@ -18,61 +21,51 @@ import kotlin.let
 
 class HostBluetoothPairingVM() : ViewModel() {
     private val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
+    var connectedsocket by mutableStateOf<BluetoothSocket?>(null)
+        private set // Only the VM can modify it now
+    fun SetActiveSocket(activesocket:BluetoothSocket?){
+        connectedsocket = activesocket;
+    }
     inner class ConnectThread(device: BluetoothDevice) : Thread() {
         private val mmSocket: BluetoothSocket? by lazy(LazyThreadSafetyMode.NONE) {
             val UUID = "2077faa4-4b23-42a5-94e6-ee47f50ea485"
             val Connection_UUID = java.util.UUID.fromString(UUID)
-
             device.createRfcommSocketToServiceRecord(Connection_UUID)
         }
 
         @RequiresPermission(Manifest.permission.BLUETOOTH_SCAN)
-        public override fun run() {
-            // Cancel discovery because it otherwise slows down the connection.
+        override fun run() {
             bluetoothAdapter?.cancelDiscovery()
-
             mmSocket?.let { socket ->
                 try {
                     socket.connect()
                 }catch(e: IOException){
+                    socket.close()
                     Log.e(TAG, "Socket's connect() method failed", e)
                 }
-
-                HandleConnection(mmSocket!!).start()
-            }
-        }
-
-        // Closes the client socket and causes the thread to finish.
-        fun cancel() {
-            try {
-                mmSocket?.close()
-            } catch (e: IOException) {
-                Log.e(TAG, "Could not close the client socket", e)
+                GetSocket(mmSocket!!).start()
+                null
             }
         }
     }
-
-    inner class HandleConnection(mmSocket: BluetoothSocket) : Thread() {
+    inner class GetSocket(public val mmSocket: BluetoothSocket) : Thread() {
         private val mmOutstream = mmSocket.outputStream
-//        private val songpath: String = ""; // Audio File path
-//        private val inputStream: ByteArrayInputStream = ByteArrayInputStream(ByteArray(songpath.toByteArray()));
-//        private val SoundArray: ByteArray = inputStream; // This byte array has a size which needs to be buffered and then written into mmOutstream in chunks
-
-        //To the outstream above, we must write the serialized byte array of the mp3 file.
         private val messageString: String = "HElloooo"
 
         override fun run() {
             try {
-                val SongByteArray = messageString.toByteArray()
-
-                mmOutstream.write(SongByteArray)
+                val HandShake = messageString.toByteArray()
+                mmOutstream.write(HandShake)
                 mmOutstream.flush()
+                Log.d(TAG, "Sent: $messageString") // Connection was successful, let's move on
 
-                Log.d(TAG, "Sent: $messageString")
+                SetActiveSocket(mmSocket)
+                Log.d("BL", "Socket assigned to Host VM")
+                return
+
             } catch (e: IOException) {
                 Log.e(TAG, "Error occurred when sending data", e)
             }
         }
     }
-
 }
