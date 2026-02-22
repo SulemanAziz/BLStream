@@ -23,7 +23,7 @@ import com.blstream.viewmodels.ReceiverViewModelFactory
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        val Hostvm: HostBluetoothPairingVM = HostBluetoothPairingVM()
+        val Hostvm = HostBluetoothPairingVM()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {

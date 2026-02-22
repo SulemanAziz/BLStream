@@ -1,5 +1,10 @@
 package com.blstream.views
 
+import android.content.Context
+import android.net.Uri
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,6 +29,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,13 +39,28 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import com.blstream.navigation.mediavm
 import com.blstream.routes.MainRoutes
 import com.blstream.routes.MainRoutes.Receiver.toReceiver
 import com.blstream.viewmodels.HostBluetoothPairingVM
+import com.blstream.viewmodels.MediaControllerVM
 import com.example.blstream.R
+import java.net.URI
 
+suspend fun ManagePlayback(){
+
+}
 @Composable
-fun HostScreen(navController: NavHostController? = null, vm: HostBluetoothPairingVM) {
+fun HostScreen(navController: NavHostController, vm: HostBluetoothPairingVM, mediavm: MediaControllerVM, appcontext: Context) {
+
+    val audioPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        if (uri != null) { //Something's been selected
+            Log.d("MediaPicker", "Selected audio URI: $uri")
+            mediavm.currentsong = uri
+        }
+    }
 
     Scaffold(
         bottomBar = {
@@ -68,7 +89,7 @@ fun HostScreen(navController: NavHostController? = null, vm: HostBluetoothPairin
                     selected = false,
                     onClick = {
                         with(MainRoutes.Host){
-                            navController?.toHostPairing()
+                            navController.toHostPairing()
                         }
                     }
                 )
@@ -89,11 +110,99 @@ fun HostScreen(navController: NavHostController? = null, vm: HostBluetoothPairin
                     .border(2.dp, Color.DarkGray, RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.CenterStart
             ) {
-                Text(text = " Current Track Info...", modifier = Modifier.padding(start = 12.dp))
+                Text(text = "Now Playing: ${mediavm.currentsong?.path}", modifier = Modifier.padding(start = 12.dp))
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            // Add new Song Area
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp),
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.Bottom
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Start Stream",
+                        fontSize = 18.sp,
+                        modifier = Modifier.padding(end = 12.dp)
+                    )
+                    FloatingActionButton(
+                        onClick = {
+                            mediavm.LoadSong()
+                        },
+                        containerColor = MaterialTheme.colorScheme.primary
+                    ) {
+                        Icon(Icons.Default.PlayArrow, contentDescription = "Start Stream")
+                    }
+                }
+                Spacer(Modifier.padding(12.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Add new Song",
+                        fontSize = 18.sp,
+                        modifier = Modifier.padding(end = 12.dp)
+                    )
+                    FloatingActionButton(
+                        onClick = {
 
+                        },
+                        containerColor = MaterialTheme.colorScheme.primary
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = "Add Song")
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Preview(showBackground=true)
+@Composable
+fun LayoutPreview(){
+    Scaffold(
+        bottomBar = {
+            NavigationBar {
+                NavigationBarItem(
+                    icon = { Icon(Icons.Default.Settings, contentDescription = "Settings Icon") },
+                    label = { Text("Settings") },
+                    selected = false,
+                    onClick = { /* Navigate or switch view */ }
+                )
+                NavigationBarItem(
+                    icon = { Icon(Icons.Default.PlayArrow, contentDescription = "Music Icon") },
+                    label = { Text("Music") },
+                    selected = true,
+                    onClick = { /* Navigate or switch view */ }
+                )
+                NavigationBarItem(
+                    icon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_devices),
+                            contentDescription = "Devices Icon",
+                            modifier = Modifier.size(24.dp)
+                        )
+                    },
+                    label = { Text("Devices") },
+                    selected = false,
+                    onClick = {
+
+                    }
+                )
+            }
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(16.dp)
+        ) {
+            // Top Section placeholders based on the sketch lines
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -101,29 +210,51 @@ fun HostScreen(navController: NavHostController? = null, vm: HostBluetoothPairin
                     .border(2.dp, Color.DarkGray, RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.CenterStart
             ) {
-                Text(text = " Queue / Playlist...", modifier = Modifier.padding(start = 12.dp))
+                Text(text = "Now Playing: ${mediavm.currentsong?.path}", modifier = Modifier.padding(start = 12.dp))
             }
-
-            Spacer(modifier = Modifier.weight(1f))
-
+            Spacer(Modifier.padding(250.dp))
             // Add new Song Area
-            Row(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 16.dp),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.Bottom
             ) {
-                Text(
-                    text = "Add new Song",
-                    fontSize = 18.sp,
-                    modifier = Modifier.padding(end = 12.dp)
-                )
-                FloatingActionButton(
-                    onClick = { },
-                    containerColor = MaterialTheme.colorScheme.primary
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = "Add Song")
+                    Text(
+                        text = "Start Stream",
+                        fontSize = 18.sp,
+                        modifier = Modifier.padding(end = 12.dp)
+                    )
+                    FloatingActionButton(
+                        onClick = {
+
+                        },
+                        containerColor = MaterialTheme.colorScheme.primary
+                    ) {
+                        Icon(Icons.Default.PlayArrow, contentDescription = "Start Stream")
+                    }
+                }
+                Spacer(Modifier.padding(12.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Add new Song",
+                        fontSize = 18.sp,
+                        modifier = Modifier.padding(end = 12.dp)
+                    )
+                    FloatingActionButton(
+                        onClick = {
+
+                        },
+                        containerColor = MaterialTheme.colorScheme.primary
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = "Add Song")
+                    }
                 }
             }
         }

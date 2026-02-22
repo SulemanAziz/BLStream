@@ -30,12 +30,11 @@ import androidx.navigation.NavHostController
 import com.blstream.viewmodels.ReceiverBluetoothPairingVM
 import com.example.blstream.R
 import androidx.compose.runtime.collectAsState
+import com.blstream.viewmodels.MediaControllerVM
 
 @SuppressLint("MissingPermission")
 @Composable
-fun ReceiverScreen(navController: NavController? = null, vm: ReceiverBluetoothPairingVM) {
-
-    val socket: BluetoothSocket = vm.connectedsocket!!
+fun ReceiverScreen(navController: NavController? = null, vm: ReceiverBluetoothPairingVM, mediavm: MediaControllerVM) {
 
     Column(
         modifier = Modifier
@@ -57,7 +56,7 @@ fun ReceiverScreen(navController: NavController? = null, vm: ReceiverBluetoothPa
 
         // Now Playing Title
         Text(
-            text = "Device: ${socket?.remoteDevice?.name}",
+            text = "Device: ${vm.connectedsocket!!.remoteDevice.name}",
             fontSize = 20.sp,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.align(Alignment.Start)
