@@ -3,11 +3,14 @@ package com.blstream.viewmodels
 import android.bluetooth.BluetoothSocket
 import android.content.Context
 import android.net.Uri
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 
 class MediaControllerVM(): ViewModel() {
     private val socket: BluetoothSocket? = null
-    var currentsong: Uri? = null
+    var currentsong by mutableStateOf<Uri?>(null)
     var issongplaying: Boolean = false
     var songData: Array<ByteArray>? = null
     var songlengthinBytes:Int = 0
@@ -76,7 +79,6 @@ class MediaControllerVM(): ViewModel() {
     }
 
     inner class ReceiverSink():Thread(){
-
         var receivedData: MutableList<ByteArray>? = null
 
         fun run(socket: BluetoothSocket){

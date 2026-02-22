@@ -2,6 +2,7 @@ package com.blstream.views
 
 import android.content.Context
 import android.net.Uri
+import android.provider.OpenableColumns
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -30,6 +31,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -52,7 +57,7 @@ suspend fun ManagePlayback(){
 }
 @Composable
 fun HostScreen(navController: NavHostController, vm: HostBluetoothPairingVM, mediavm: MediaControllerVM, appcontext: Context) {
-
+    var songtitle by remember { mutableStateOf("") }
     val audioPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
@@ -61,6 +66,21 @@ fun HostScreen(navController: NavHostController, vm: HostBluetoothPairingVM, med
             mediavm.currentsong = uri
         }
     }
+    LaunchedEffect(mediavm.currentsong) {
+        mediavm.currentsong?.let { uri ->
+            appcontext.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+                if (cursor.moveToFirst()) {
+                    val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                    if (nameIndex != -1) {
+                        songtitle = cursor.getString(nameIndex)
+                    }
+                }
+            }
+        } ?: run {
+            songtitle = "None Selected"
+        }
+    }
+
 
     Scaffold(
         bottomBar = {
@@ -110,7 +130,7 @@ fun HostScreen(navController: NavHostController, vm: HostBluetoothPairingVM, med
                     .border(2.dp, Color.DarkGray, RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.CenterStart
             ) {
-                Text(text = "Now Playing: ${mediavm.currentsong?.path}", modifier = Modifier.padding(start = 12.dp))
+                Text(text = "Now Playing: ${songtitle}", modifier = Modifier.padding(start = 12.dp))
             }
 
             // Add new Song Area
@@ -149,7 +169,7 @@ fun HostScreen(navController: NavHostController, vm: HostBluetoothPairingVM, med
                     )
                     FloatingActionButton(
                         onClick = {
-
+                            audioPickerLauncher.launch("audio/mpeg")
                         },
                         containerColor = MaterialTheme.colorScheme.primary
                     ) {
