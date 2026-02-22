@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.runtime.Composable
 import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,18 +31,22 @@ import com.blstream.routes.MainRoutes
 import com.blstream.routes.MainRoutes.Receiver.toReceiver
 import com.blstream.viewmodels.ReceiverBluetoothPairingVM
 import com.blstream.viewmodels.ReceiverViewModelFactory
+import androidx.compose.runtime.collectAsState
 
 
 @Composable
 fun ReceiverPairingScreen(vm: ReceiverBluetoothPairingVM, navController: NavController) {
-    /* if(vm.connectedsocket!=null){
-        //We have the socket needed now:
-        //ReceiverScreen(navController, vm.connectedsocket!!)
-        Log.d("BLStream", "Connected Socket")
-    } Not sure where to call this?*/
+
+    LaunchedEffect(vm.connectedsocket) {
+        if (vm.connectedsocket!=null) {
+            with(MainRoutes.Receiver){
+                navController.toReceiver()
+            }
+        }
+    }
+
     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
         Row(
-            modifier = Modifier.fillMaxWidth()
         ) {
             Button(
                 onClick = {
@@ -61,47 +66,5 @@ fun ReceiverPairingScreen(vm: ReceiverBluetoothPairingVM, navController: NavCont
                 Text("Stop Listening")
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun Layout(){
-    Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-
-        Row(
-
-        ) {
-            Button(
-                onClick = {  },
-            ) {
-                Text("Start Listening")
-            }
-
-            Button(
-                onClick = { },
-            ) {
-                Text("Stop Listening")
-            }
-        }
-
-        Row(
-
-        )
-        {
-            Button(
-                onClick = {  },
-            ) {
-                Text("Start Reading Buffer")
-            }
-
-            Button(
-                onClick = { },
-            ) {
-                Text("Stop Reading Buffer")
-            }
-        }
-        var blmsg by remember { mutableStateOf("Somethin") }
-        Text(text = blmsg)
     }
 }

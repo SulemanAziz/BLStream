@@ -23,10 +23,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import com.blstream.routes.MainRoutes
 import com.blstream.viewmodels.HostBluetoothPairingVM
 
 @Composable
-fun HostPairingScreen(vm: HostBluetoothPairingVM, appcontext: Context) {
+fun HostPairingScreen(vm: HostBluetoothPairingVM, appcontext: Context, navcontroller: NavController) {
 
     val bluetoothAdapter: BluetoothAdapter? = remember { BluetoothAdapter.getDefaultAdapter() }
     var pairedDevices by remember { mutableStateOf<List<BluetoothDevice>>(emptyList()) }
@@ -71,25 +73,33 @@ fun HostPairingScreen(vm: HostBluetoothPairingVM, appcontext: Context) {
     }
 
     if(pairedDevices!={}){
-        PairedDevicesList(pairedDevices = pairedDevices, vm = vm, context = appcontext)
+        PairedDevicesList(pairedDevices = pairedDevices, vm = vm, context = appcontext, navcontroller = navcontroller)
     }
 }
 @Composable
 fun PairedDevicesList(
     pairedDevices: List<BluetoothDevice>,
     vm: HostBluetoothPairingVM,
-    context: Context
+    context: Context,
+    navcontroller: NavController
 ) {
+    LaunchedEffect(vm.connectedsocket){
+        if(vm.connectedsocket!=null){
+            with(MainRoutes.Host){
+                navcontroller.toHost()
+            }
+        }
+    }
+
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         pairedDevices.forEach { device ->
-            Button(onClick = {
-                vm.ConnectThread(device).start()
-            }) {
-                // Using a helper to safely get the name without crashing
+            Button(
+            onClick = { vm.ConnectThread(device).start() }
+            ) {
                 val deviceName = if (ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
                     device.name ?: "Unknown Device"
                 } else {

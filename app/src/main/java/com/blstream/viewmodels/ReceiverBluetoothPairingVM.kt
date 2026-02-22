@@ -10,6 +10,9 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -17,6 +20,7 @@ import androidx.navigation.NavController
 import com.blstream.routes.MainRoutes
 import com.blstream.routes.MainRoutes.Receiver.toReceiver
 import com.blstream.routes.MainRoutes.Receiver.toReceiverPairing
+import kotlinx.coroutines.flow.MutableStateFlow
 import java.io.IOException
 
 
@@ -32,7 +36,8 @@ class ReceiverViewModelFactory(private val context: Context) : ViewModelProvider
 
 class ReceiverBluetoothPairingVM(context: Context) : ViewModel(){
     private val appcontext = context
-    var connectedsocket: BluetoothSocket? = null
+    var connectedsocket by mutableStateOf<BluetoothSocket?>(null)
+        private set // Only the VM can modify it now
     val bluetoothAdapter: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     var listen: Boolean = false;
     var messagefromHost:String = "";
@@ -64,12 +69,10 @@ class ReceiverBluetoothPairingVM(context: Context) : ViewModel(){
                 socket?.also {
                     Log.d(TAG, "Connected, attempting to read buffer")
                     AcceptThread().cancel() // We are done listening
-                    HandleConnection(socket).start() //Do everything in this thread, on return - the connection is terminated
+                    HandleConnection(socket).start()
                 }
             }
         }
-
-        // Closes the connect socket and causes the thread to finish.
         fun cancel() {
             try {
                 mmServerSocket?.close()
@@ -87,15 +90,17 @@ class ReceiverBluetoothPairingVM(context: Context) : ViewModel(){
 
         override fun run() {
             var numBytes:Int
-                try {
-                    numBytes = mmInStream?.read(mmBuffer) ?: 0
-                    messagefromHost = String(mmBuffer, 0, numBytes)
-                    Log.d(TAG, "Received: $messagefromHost") // Connection is working, let's move on
-                    connectedsocket = mmSocket;
-                    HandleConnection(mmSocket).cancel()
-                } catch (e: IOException) {
-                    Log.d(TAG, "Input stream was disconnected", e)
-                }
+            try {
+                numBytes = mmInStream?.read(mmBuffer) ?: 0
+                messagefromHost = String(mmBuffer, 0, numBytes)
+                Log.d(TAG, "Received: $messagefromHost") // Connection is working, let's move on
+                connectedsocket = mmSocket;
+                Log.d("BL", "Socket assigned to Receiver VM")
+                return
+            } catch (e: IOException) {
+                Log.d(TAG, "Input stream was disconnected", e)
+                HandleConnection(mmSocket).cancel()
+            }
         }
 
         fun cancel() {
