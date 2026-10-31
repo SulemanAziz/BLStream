@@ -13,6 +13,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -96,15 +98,15 @@ fun PairedDevicesList(
         }
     }
 
-    Column(
+    LazyColumn (
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         if (vm.connectionstatus.isNotEmpty()) {
-            Text(text = vm.connectionstatus)
+            item { Text(text = vm.connectionstatus) }
         }
-        pairedDevices.forEach { device ->
+        items(pairedDevices) { device ->
             Button(
             onClick = { vm.Connect(device) },
             enabled = !vm.isconnecting
