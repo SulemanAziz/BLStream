@@ -83,10 +83,15 @@ fun PairedDevicesList(
     context: Context,
     navcontroller: NavController
 ) {
+    // Remember which socket we started with so coming back here doesn't bounce straight out again
+    val initialsocket = remember { vm.connectedsocket }
     LaunchedEffect(vm.connectedsocket){
-        if(vm.connectedsocket!=null){
-            with(MainRoutes.Host){
-                navcontroller.toHost()
+        if(vm.connectedsocket!=null && vm.connectedsocket != initialsocket){
+            // Coming from the host view's Devices tab, go back to it instead of stacking another one
+            if (!navcontroller.popBackStack("host_view", inclusive = false)) {
+                with(MainRoutes.Host){
+                    navcontroller.toHost()
+                }
             }
         }
     }
@@ -96,9 +101,13 @@ fun PairedDevicesList(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        if (vm.connectionstatus.isNotEmpty()) {
+            Text(text = vm.connectionstatus)
+        }
         pairedDevices.forEach { device ->
             Button(
-            onClick = { vm.ConnectThread(device).start() }
+            onClick = { vm.Connect(device) },
+            enabled = !vm.isconnecting
             ) {
                 val deviceName = if (ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
                     device.name ?: "Unknown Device"
