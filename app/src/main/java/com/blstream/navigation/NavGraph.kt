@@ -1,33 +1,27 @@
 package com.blstream.navigation
 
-import android.bluetooth.BluetoothSocket
 import android.content.Context
-import android.widget.MediaController
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavArgument
-import androidx.navigation.NavArgumentBuilder
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.blstream.MainScreen
 import com.blstream.viewmodels.HostBluetoothPairingVM
 import com.blstream.viewmodels.MediaControllerVM
 import com.blstream.viewmodels.ReceiverBluetoothPairingVM
+import com.blstream.viewmodels.ReceiverMediaVM
 import com.blstream.views.HostPairingScreen
 import com.blstream.views.HostScreen
 import com.blstream.views.ReceiverPairingScreen
 import com.blstream.views.ReceiverScreen
 
-val mediavm = MediaControllerVM()
 @Composable
-fun AppNavigation(Receivervm: ReceiverBluetoothPairingVM, Hostvm: HostBluetoothPairingVM, appcontext: Context) {
+fun AppNavigation(Receivervm: ReceiverBluetoothPairingVM, Hostvm: HostBluetoothPairingVM, mediavm: MediaControllerVM, receivermediavm: ReceiverMediaVM, appcontext: Context) {
     val navController = rememberNavController()
+    // Reopened from the notification while the host is still streaming, go straight back to it
+    val start = if (mediavm.islinkup || mediavm.isstreaming) "host_view" else "home"
 
-    NavHost(navController = navController, startDestination = "home") {
+    NavHost(navController = navController, startDestination = start) {
 
         composable("home") {
             MainScreen(navController)
@@ -38,7 +32,7 @@ fun AppNavigation(Receivervm: ReceiverBluetoothPairingVM, Hostvm: HostBluetoothP
         }
 
         composable(route = "receiver_view",) {
-            ReceiverScreen(navController, Receivervm, mediavm)
+            ReceiverScreen(navController, Receivervm, receivermediavm)
         }
 
         composable("host_pairing") {
@@ -46,7 +40,7 @@ fun AppNavigation(Receivervm: ReceiverBluetoothPairingVM, Hostvm: HostBluetoothP
         }
 
         composable("receiver_pairing") {
-            ReceiverPairingScreen(vm = Receivervm, navController = navController)
+            ReceiverPairingScreen(vm = Receivervm, appcontext = appcontext, navController = navController)
         }
     }
 }
