@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.blstream.bluetooth.FrameType
 import com.blstream.viewmodels.ReceiverBluetoothPairingVM
+import com.blstream.viewmodels.LyricsVM
 import com.blstream.viewmodels.ReceiverMediaVM
 import com.example.blstream.R
 
@@ -181,6 +182,21 @@ private fun LyricsPanel(mediavm: ReceiverMediaVM, showlyrics: Boolean) {
                 color = Color.Gray,
                 textAlign = TextAlign.Center
             )
+            Spacer(modifier = Modifier.height(24.dp))
+            // Shift the lyrics if the .srt is timed early or late for this copy of the song
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                TextButton(onClick = { mediavm.AdjustLyricsOffset(-LyricsVM.OFFSET_STEP_MS) }) {
+                    Text("−", fontSize = 22.sp)
+                }
+                Text(
+                    text = "Lyrics %+.2f s".format(lyrics.offsetms / 1000f),
+                    fontSize = 14.sp,
+                    color = Color.Gray
+                )
+                TextButton(onClick = { mediavm.AdjustLyricsOffset(LyricsVM.OFFSET_STEP_MS) }) {
+                    Text("+", fontSize = 22.sp)
+                }
+            }
         }
     }
 }

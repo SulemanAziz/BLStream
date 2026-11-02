@@ -13,6 +13,10 @@ class LyricsVM {
         private set
     var nextindex by mutableStateOf(-1)
         private set
+    // Positive = show lines later. For .srt files timed a little early, or phones that report position ahead
+    var offsetms by mutableStateOf(0L)
+        private set
+    private var lastpositionms = 0L
 
     fun LoadLyrics(srt: String) {
         cues = ParseLyrics(srt)
@@ -24,18 +28,29 @@ class LyricsVM {
         cues = emptyList()
         currentindex = -1
         nextindex = -1
+        offsetms = 0
+    }
+
+    fun SetOffset(ms: Long) {
+        offsetms = ms.coerceIn(-MAX_OFFSET_MS, MAX_OFFSET_MS)
+        UpdatePosition(lastpositionms) // Apply straight away, even while paused
     }
 
     fun UpdatePosition(positionms: Long) {
+        lastpositionms = positionms
         val list = cues
-        val last = LastStartedCue(list, positionms)
-        val current = if (last >= 0 && positionms < list[last].endms) last else -1
+        val lyricms = positionms - offsetms
+        val last = LastStartedCue(list, lyricms)
+        val current = if (last >= 0 && lyricms < list[last].endms) last else -1
         val next = if (last + 1 < list.size) last + 1 else -1
         if (current != currentindex) currentindex = current
         if (next != nextindex) nextindex = next
     }
 
     companion object {
+        const val OFFSET_STEP_MS = 250L
+        const val MAX_OFFSET_MS = 30_000L
+
         private val TIMING = Regex("""(\d{1,3}):(\d{1,2}):(\d{1,2})[,.](\d{1,3})\s*-->\s*(\d{1,3}):(\d{1,2}):(\d{1,2})[,.](\d{1,3})""")
         private val TAGS = Regex("""<[^>]+>|\{\\[^}]*\}""")
         private val INDEX = Regex("""^\d+$""")

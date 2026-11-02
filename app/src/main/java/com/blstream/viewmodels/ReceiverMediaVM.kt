@@ -136,6 +136,7 @@ class ReceiverMediaVM(context: Context) : ViewModel(), BluetoothLink.Listener {
     @Volatile private var restartrequested = false
     @Volatile private var focuspaused = false
     private val sendqueue = Executors.newSingleThreadExecutor() // Keeps acks/status off the playback thread
+    private val offsetprefs = appcontext.getSharedPreferences("lyrics_offsets", Context.MODE_PRIVATE)
 
     private val audiomanager = appcontext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     private val focusrequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
@@ -198,6 +199,16 @@ class ReceiverMediaVM(context: Context) : ViewModel(), BluetoothLink.Listener {
         }
     }
 
+    // -/+ buttons on the lyrics, saved per song so the same file stays in sync next time
+    fun AdjustLyricsOffset(deltams: Long) {
+        val info = session?.info ?: return
+        lyrics.SetOffset(lyrics.offsetms + deltams)
+        offsetprefs.edit().putLong(OffsetKey(info), lyrics.offsetms).apply()
+    }
+
+    // Keyed by content rather than name, a renamed copy of the same song keeps its offset
+    private fun OffsetKey(info: StreamProtocol.SongInfo) = "offset_${info.crc}_${info.size}"
+
     fun TogglePlayback() {
         RequestControl(if (playbackstate == PlaybackState.PLAYING || playbackstate == PlaybackState.BUFFERING && hostwantsplaying) FrameType.PAUSE else FrameType.PLAY)
     }
@@ -239,6 +250,7 @@ class ReceiverMediaVM(context: Context) : ViewModel(), BluetoothLink.Listener {
                     songname = info.name
                     durationms = info.durationms
                     statusmessage = ""
+                    lyrics.SetOffset(offsetprefs.getLong(OffsetKey(info), 0L))
                     0L
                 }
                 session?.lastacked = ready

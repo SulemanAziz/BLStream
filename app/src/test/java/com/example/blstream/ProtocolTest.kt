@@ -110,6 +110,24 @@ class SrtParserTest {
     }
 
     @Test
+    fun offsetDelaysLyrics() {
+        val lyrics = LyricsVM()
+        lyrics.LoadLyrics("1\n00:00:01,000 --> 00:00:02,000\nA\n\n2\n00:00:03,000 --> 00:00:04,000\nB\n")
+        lyrics.UpdatePosition(1200)
+        assertEquals(0, lyrics.currentindex)
+
+        lyrics.SetOffset(500) // Lines now show 0.5s later, A starts at 1.5s
+        assertEquals(-1, lyrics.currentindex)
+        lyrics.UpdatePosition(3400)
+        assertEquals(-1, lyrics.currentindex) // B not until 3.5s
+        lyrics.UpdatePosition(3600)
+        assertEquals(1, lyrics.currentindex)
+
+        lyrics.SetOffset(LyricsVM.MAX_OFFSET_MS * 2)
+        assertEquals(LyricsVM.MAX_OFFSET_MS, lyrics.offsetms)
+    }
+
+    @Test
     fun findsCueForPosition() {
         val cues = LyricsVM.ParseLyrics("1\n00:00:01,000 --> 00:00:02,000\nA\n\n2\n00:00:03,000 --> 00:00:04,000\nB\n")
         assertEquals(-1, LyricsVM.LastStartedCue(cues, 500))
