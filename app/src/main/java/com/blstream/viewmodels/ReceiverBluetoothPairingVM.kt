@@ -42,6 +42,8 @@ class ReceiverBluetoothPairingVM(context: Context) : ViewModel(){
         private set
     var islistening by mutableStateOf(false)
         private set
+    var listenerror by mutableStateOf("") // Shown on screen when listening couldn't start
+        private set
     val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter();
     private var acceptthread: AcceptThread? = null
 
@@ -78,15 +80,21 @@ class ReceiverBluetoothPairingVM(context: Context) : ViewModel(){
         @Volatile private var listen = true
 
         override fun run() {
+            listenerror = ""
             islistening = true
             // Keep listening until cancelled or a host passes the handshake
             while (listen) {
-                val server = mmServerSocket ?: break
+                val server = mmServerSocket
+                if (server == null) {
+                    listenerror = if (bluetoothAdapter?.isEnabled != true) "Bluetooth is off" else "Couldn't start listening, check Bluetooth permission"
+                    break
+                }
                 val socket: BluetoothSocket? = try {
                     Log.d(TAG, "Trying to Listen")
                     server.accept()
                 } catch (e: IOException) {
                     Log.e(TAG, "Socket's accept() method failed", e)
+                    if (listen) listenerror = "Listening stopped: ${e.message}" // Not an error if we cancelled it ourselves
                     break
                 }
                 socket?.also {

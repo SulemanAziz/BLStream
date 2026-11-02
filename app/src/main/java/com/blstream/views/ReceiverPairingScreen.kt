@@ -63,11 +63,13 @@ fun ReceiverPairingScreen(vm: ReceiverBluetoothPairingVM, appcontext: Context, n
         }
     }
 
+    BluetoothGate(appcontext) {
     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
         Text(
             when {
                 !permissiongranted -> "Bluetooth permission is needed"
                 vm.islistening -> "Waiting for the host to connect..."
+                vm.listenerror.isNotEmpty() -> vm.listenerror
                 else -> "Not listening"
             }
         )
@@ -88,5 +90,6 @@ fun ReceiverPairingScreen(vm: ReceiverBluetoothPairingVM, appcontext: Context, n
                 Text("Stop Listening")
             }
         }
+    }
     }
 }
